@@ -1,6 +1,6 @@
 package dev.soaresenzo.modak.notificationService.notification.valueobjects;
 
-import dev.soaresenzo.modak.notificationService.errors.EmailValidationException;
+import dev.soaresenzo.modak.notificationService.notification.exceptions.EmailValidationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

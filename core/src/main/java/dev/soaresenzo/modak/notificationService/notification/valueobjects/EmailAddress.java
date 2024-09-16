@@ -1,6 +1,6 @@
 package dev.soaresenzo.modak.notificationService.notification.valueobjects;
 
-import dev.soaresenzo.modak.notificationService.errors.EmailValidationException;
+import dev.soaresenzo.modak.notificationService.notification.exceptions.EmailValidationException;
 
 import java.util.Objects;
 import java.util.regex.Pattern;

@@ -1,7 +1,7 @@
-package dev.soaresenzo.modak.notificationService.errors;
+package dev.soaresenzo.modak.notificationService.notification.exceptions;
 
 public class EmailValidationException extends RuntimeException {
     public EmailValidationException(String message) {
-        super(message);
+        super(message, null);
     }
 }
