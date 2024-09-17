@@ -79,5 +79,6 @@ class ApplyRateLimitUsecaseImplTest {
         );
 
         Mockito.verify(notificationGateway, Mockito.times(1)).sendNotification(aNotification);
+        Mockito.verify(rateLimitGateway, Mockito.times(1)).saveRequest(aNotification.getId(), aNotification.getRecipient(), aNotification.getRateLimitData());
     }
 }
