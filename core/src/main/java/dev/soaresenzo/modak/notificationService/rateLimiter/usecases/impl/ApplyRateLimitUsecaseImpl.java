@@ -28,9 +28,11 @@ public class ApplyRateLimitUsecaseImpl implements ApplyRateLimitUsecase {
 
         final var processedRequests = gateway.getAmountOfRequestsInTheLastPeriodForRecipient(notification.getRecipient(), notification.getRateLimitData());
 
+        System.out.println(STR."Processed requests: \{processedRequests}");
         if (processedRequests >= maxRequests) {
             throw new RateLimitExceededException("Too many requests.");
         }
+        System.out.println("Saving request.");
         this.gateway.saveRequest(notification.getId(), notification.getRecipient(), notification.getRateLimitData());
         function.run();
     }

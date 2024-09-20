@@ -1,0 +1,20 @@
+#Defines a web service in a local dockerfile and a redis database
+services:
+    web:
+        build: .
+        ports:
+        - "5000:5000"
+    redis:
+        image: "redis:7.4.0-alpine"
+        ports:
+          - "6379:6379"
+    # E-mail server to show notifications working
+    mailhog:
+      image: mailhog/mailhog
+      ports:
+        - "1025:1025"
+        - "8025:8025"
+        -
+networks:
+  backend:
+    driver: bridge

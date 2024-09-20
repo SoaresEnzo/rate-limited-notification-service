@@ -7,7 +7,6 @@ import dev.soaresenzo.modak.notificationService.notification.valueobjects.Notifi
 import dev.soaresenzo.modak.notificationService.notification.valueobjects.NotificationType;
 import dev.soaresenzo.modak.notificationService.rateLimiter.dataprovider.RateLimitGateway;
 import dev.soaresenzo.modak.notificationService.rateLimiter.exceptions.RateLimitExceededException;
-import dev.soaresenzo.modak.notificationService.rateLimiter.usecases.ApplyRateLimitUsecase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.temporal.ChronoUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class ApplyRateLimitUsecaseImplTest {
@@ -51,7 +48,7 @@ class ApplyRateLimitUsecaseImplTest {
         Mockito.when(rateLimitGateway.getAmountOfRequestsInTheLastPeriodForRecipient(
                 aNotification.getRecipient(),
                 aNotification.getRateLimitData()
-        )).thenReturn(10);
+        )).thenReturn(10L);
 
         final var anException = Assertions.assertThrows(RateLimitExceededException.class, ()->
             this.applyRateLimitUsecase.apply(aNotification, Assertions::fail)
@@ -72,7 +69,7 @@ class ApplyRateLimitUsecaseImplTest {
         Mockito.when(rateLimitGateway.getAmountOfRequestsInTheLastPeriodForRecipient(
                 aNotification.getRecipient(),
                 aNotification.getRateLimitData()
-        )).thenReturn(9);
+        )).thenReturn(9L);
 
         Assertions.assertDoesNotThrow(()->
                 this.applyRateLimitUsecase.apply(aNotification, ()-> notificationGateway.sendNotification(aNotification))

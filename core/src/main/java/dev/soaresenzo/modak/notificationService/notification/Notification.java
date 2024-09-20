@@ -2,16 +2,19 @@ package dev.soaresenzo.modak.notificationService.notification;
 
 import dev.soaresenzo.modak.notificationService.Entity;
 import dev.soaresenzo.modak.notificationService.notification.exceptions.NotificationException;
-import dev.soaresenzo.modak.notificationService.notification.valueobjects.*;
-import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitable;
+import dev.soaresenzo.modak.notificationService.notification.valueobjects.EmailAddress;
+import dev.soaresenzo.modak.notificationService.notification.valueobjects.NotificationChannel;
+import dev.soaresenzo.modak.notificationService.notification.valueobjects.NotificationID;
+import dev.soaresenzo.modak.notificationService.notification.valueobjects.NotificationType;
+import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitConfigurable;
 
 import java.util.Objects;
 
 public class Notification extends Entity<NotificationID> {
-    private String body;
-    private NotificationType type;
-    private NotificationChannel channel;
-    private EmailAddress recipient;
+    private final String body;
+    private final NotificationType type;
+    private final NotificationChannel channel;
+    private final EmailAddress recipient;
 
     private Notification(final NotificationID id, final String body, final NotificationType type, final NotificationChannel channel, final EmailAddress recipient) {
         this.id = id;
@@ -27,7 +30,7 @@ public class Notification extends Entity<NotificationID> {
         return notification;
     }
 
-    public RateLimitable getRateLimitData() {
+    public RateLimitConfigurable getRateLimitData() {
         return this.type;
     }
 

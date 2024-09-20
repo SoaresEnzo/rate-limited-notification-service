@@ -1,11 +1,11 @@
 package dev.soaresenzo.modak.notificationService.notification.valueobjects;
 
-import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitable;
+import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitConfigurable;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-public class NotificationType implements RateLimitable {
+public class NotificationType implements RateLimitConfigurable {
     private final String typeName;
     private final ChronoUnit rateLimitPeriod;
     private final Long rateLimitLimit;
