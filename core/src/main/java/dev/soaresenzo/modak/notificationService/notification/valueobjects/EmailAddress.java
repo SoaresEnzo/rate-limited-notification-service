@@ -1,11 +1,12 @@
 package dev.soaresenzo.modak.notificationService.notification.valueobjects;
 
 import dev.soaresenzo.modak.notificationService.notification.exceptions.EmailValidationException;
+import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitSubject;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class EmailAddress {
+public class EmailAddress implements RateLimitSubject {
     private final String value;
 
     private EmailAddress(final String value) {
@@ -34,5 +35,23 @@ public class EmailAddress {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public String getSubject() {
+        return this.value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmailAddress that = (EmailAddress) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 }

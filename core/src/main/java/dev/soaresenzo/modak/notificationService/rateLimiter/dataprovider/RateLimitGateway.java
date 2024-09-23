@@ -1,11 +1,11 @@
 package dev.soaresenzo.modak.notificationService.rateLimiter.dataprovider;
 
 import dev.soaresenzo.modak.notificationService.Identifier;
-import dev.soaresenzo.modak.notificationService.notification.valueobjects.EmailAddress;
-import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitable;
+import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitConfigurable;
+import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitSubject;
 
 public interface RateLimitGateway {
 
-    Integer getAmountOfRequestsInTheLastPeriodForRecipient(EmailAddress recipient, RateLimitable limitable);
-    void saveRequest(Identifier id, EmailAddress recipient, RateLimitable limitable);
+    Long getAmountOfRequestsInTheLastPeriodForRecipient(RateLimitSubject subject, RateLimitConfigurable configurable);
+    void saveRequest(Identifier id, RateLimitSubject subject, RateLimitConfigurable configurable);
 }

@@ -1,0 +1,65 @@
+
+services:
+  api2:
+    container_name: rate_limit_api-2
+    command: dockerize -wait tcp4://redis:6379 -wait tcp4://localstack:4566 -timeout 180s java --enable-preview -jar app.jar
+    build: .
+    environment:
+      - NOTIFICATION_PARAMETERS={"MARKETING":{"rate":3,"limit":1,"period":"HOURS"},"STATUS":{"rate":2,"limit":1,"period":"MINUTES"},"NEWS":{"rate":1,"limit":1,"period":"DAYS"}}
+      - SECRETS_MANAGER_ENDPOINT=http://localstack:4566
+    depends_on:
+      - redis
+      - localstack
+    ports:
+      - "8081:8080"
+    networks:
+      - backend
+  api:
+    container_name: rate_limit_api
+    command: dockerize -wait tcp4://redis:6379 -wait tcp4://localstack:4566 -timeout 180s java --enable-preview -jar app.jar
+    build: .
+    environment:
+      - NOTIFICATION_PARAMETERS={"MARKETING":{"rate":3,"limit":1,"period":"HOURS"},"STATUS":{"rate":2,"limit":1,"period":"MINUTES"},"NEWS":{"rate":1,"limit":1,"period":"DAYS"}}
+      - SECRETS_MANAGER_ENDPOINT=http://localstack:4566
+    depends_on:
+      - redis
+      - localstack
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+  redis:
+      container_name: rate_limit_redis
+      image: "redis:7.4.0-alpine"
+      ports:
+        - "6379:6379"
+      networks:
+        - backend
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - backend
+
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    environment:
+      - SERVICES=secretsmanager
+      - DEFAULT_REGION=us-east-1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
