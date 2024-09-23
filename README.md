@@ -66,7 +66,7 @@ It also uses Localstack to simulate the AWS Secrets Manager, that in production 
 5. Await the project to be built and running.
 
 
-6. The API will be running on ports 8080 and 8081 of your computer. You can check the API documentation to see how to call the api using the following links:
+6. The API should be running on ports 8080 and 8081 of your computer. You can check the API documentation to see how to call the api using the following links:
 
 
 
@@ -75,7 +75,9 @@ It also uses Localstack to simulate the AWS Secrets Manager, that in production 
 - http://localhost:8080/swagger-ui/index.html
 - http://localhost:8080/v3/api-docs
 
-7. After sending a request, you can access the Mailhog interface to see the emails sent. 
+7. If the API containers fail to launch due to some Secrets Manager error, the container must have tried to retrieve secrets before the Localstack container was ready. Just run docker-compose up -d again.
+
+8. After sending a request, you can access the Mailhog interface to see the emails sent. 
 
 - The Mailhog interface will be available at http://localhost:8025
 
