@@ -12,9 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+        "SECRETS_MANAGER_ENDPOINT=http://localhost:4566"
+})
 class NotificationGatewayImplTest {
 
     @Mock

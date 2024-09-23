@@ -16,6 +16,7 @@ import dev.soaresenzo.modak.notificationService.rateLimit.dataprovider.RateLimit
 import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitConfigurable;
 import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitSubject;
 import dev.soaresenzo.modak.notificationService.rateLimiter.exceptions.RateLimitExceededException;
+import io.awspring.cloud.autoconfigure.config.secretsmanager.SecretsManagerConfigDataLoader;
 import jakarta.inject.Inject;
 import jakarta.mail.internet.MimeMessage;
 import org.hamcrest.Matchers;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 

@@ -8,4 +8,5 @@ public interface RateLimitGateway {
 
     Long getAmountOfRequestsInTheLastPeriodForRecipient(RateLimitSubject subject, RateLimitConfigurable configurable);
     void saveRequest(Identifier id, RateLimitSubject subject, RateLimitConfigurable configurable);
+    void removeRequest(Identifier id, RateLimitSubject subject, RateLimitConfigurable configurable);
 }

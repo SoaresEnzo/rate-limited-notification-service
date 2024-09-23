@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.temporal.ChronoUnit;
 
@@ -66,5 +67,27 @@ class RateLimitGatewayImplTest {
         final var entries = redisTemplate.opsForZSet().range(key, 0, -1);
         assertNotNull(entries);
         assertEquals(expectedNumberOfRequests, entries.size());
+    }
+
+    @Test
+    void givenSomeAPreSavedRequest_whenCallRemoveRequest_shouldRemoveRequest() {
+        // given
+        final var subject = EmailAddress.of("test@test.com");
+        final var configurable = new NotificationType("Marketing", ChronoUnit.DAYS, 1L, 10L);
+        final var anId = NotificationID.unique();
+        final var key = RateLimitKey.generate(configurable, subject);
+
+        rateLimitGateway.saveRequest(anId, subject, configurable);
+        var entries = redisTemplate.opsForZSet().range(key, 0, -1);
+        assertEquals(1, entries.size());
+
+        // when
+        rateLimitGateway.removeRequest(anId, subject, configurable);
+
+        // then
+
+        entries = redisTemplate.opsForZSet().range(key, 0, -1);
+        assertNotNull(entries);
+        assertEquals(0, entries.size());
     }
 }

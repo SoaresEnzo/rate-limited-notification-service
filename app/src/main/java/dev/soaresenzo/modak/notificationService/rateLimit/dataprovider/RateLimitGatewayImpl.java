@@ -71,6 +71,17 @@ public class RateLimitGatewayImpl implements RateLimitGateway {
         } finally {
             lock.unlock();
         }
+    }
 
+    @Override
+    public void removeRequest(Identifier id, RateLimitSubject subject, RateLimitConfigurable configurable) {
+        final var key = RateLimitKey.generate(configurable, subject);
+
+        final var entry = RateLimitStoreEntry.newEntry(
+                id.getValue(),
+                subject,
+                configurable
+        );
+        this.redisTemplate.opsForZSet().remove(key, entry);
     }
 }

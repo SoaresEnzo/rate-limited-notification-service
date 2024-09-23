@@ -83,7 +83,7 @@ class ApplyRateLimitUsecaseTest {
     }
 
     @Test
-    void givenANotification_whenGateayThrowsRandomException_thenShouldThrowException() {
+    void givenANotification_whenGatewayThrowsRandomException_thenShouldThrowException() {
         final var aNotification = Notification.newNotification(
                 "test",
                 "test",
@@ -103,5 +103,31 @@ class ApplyRateLimitUsecaseTest {
         );
 
         Assertions.assertEquals(anErrorThrown, anException.getMessage());
+    }
+
+    @Test
+    void givenANotification_whenIsNotSend_thenShouldThrowExceptionAndRemoveDataFromStore() {
+        final var aNotification = Notification.newNotification(
+                "test",
+                "test",
+                new NotificationType("Marketing", ChronoUnit.DAYS, 1L, 10L),
+                NotificationChannel.EMAIL,
+                EmailAddress.of("test@gmail.com")
+        );
+        final var anErrorThrown = "Random exception";
+
+        Mockito.when(rateLimitGateway.getAmountOfRequestsInTheLastPeriodForRecipient(
+                Mockito.any(),
+                Mockito.any()
+        )).thenReturn(9L);
+
+        Mockito.doThrow(new RuntimeException(anErrorThrown)).when(notificationGateway).sendNotification(aNotification);
+
+        final var anException = Assertions.assertThrows(RuntimeException.class, ()->
+                this.applyRateLimitUsecase.apply(aNotification, () -> notificationGateway.sendNotification(aNotification))
+        );
+
+        Assertions.assertEquals(anErrorThrown, anException.getMessage());
+        Mockito.verify(rateLimitGateway, Mockito.times(1)).removeRequest(aNotification.getId(), aNotification.getRecipient(), aNotification.getRateLimitData());
     }
 }

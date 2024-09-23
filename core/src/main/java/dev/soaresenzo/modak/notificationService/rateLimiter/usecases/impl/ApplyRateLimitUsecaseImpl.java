@@ -30,6 +30,11 @@ public class ApplyRateLimitUsecaseImpl implements ApplyRateLimitUsecase {
         }
 
         this.gateway.saveRequest(notification.getId(), notification.getRecipient(), notification.getRateLimitData());
+        try {
         function.run();
+        } catch (Exception e) {
+            this.gateway.removeRequest(notification.getId(), notification.getRecipient(), notification.getRateLimitData());
+            throw e;
+        }
     }
 }
