@@ -41,4 +41,17 @@ public class EmailAddress implements RateLimitSubject {
     public String getSubject() {
         return this.value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmailAddress that = (EmailAddress) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
 }

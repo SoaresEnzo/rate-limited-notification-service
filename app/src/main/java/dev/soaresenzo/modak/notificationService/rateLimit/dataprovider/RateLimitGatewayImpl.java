@@ -7,25 +7,30 @@ import dev.soaresenzo.modak.notificationService.rateLimiter.dataprovider.RateLim
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.integration.support.locks.ExpirableLockRegistry;
 
 import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+
 @Named
 public class RateLimitGatewayImpl implements RateLimitGateway {
     private final RedisTemplate<String, RateLimitStoreEntry> redisTemplate;
+    private final ExpirableLockRegistry lockRegistry;
 
     @Inject
     public RateLimitGatewayImpl(
-            final RedisTemplate<String, RateLimitStoreEntry> redisTemplate
+            final RedisTemplate<String, RateLimitStoreEntry> redisTemplate,
+            final ExpirableLockRegistry lockRegistry
     ) {
         this.redisTemplate = Objects.requireNonNull(redisTemplate);
+        this.lockRegistry = Objects.requireNonNull(lockRegistry);
     }
 
     @Override
     public Long getAmountOfRequestsInTheLastPeriodForRecipient(RateLimitSubject subject, RateLimitConfigurable configurable) {
-        final var key = STR."RateLimitStoreEntry: \{subject.getSubject()}";
+        final var key = RateLimitKey.generate(configurable, subject);
         return Objects
                 .requireNonNull(this.redisTemplate
                         .opsForZSet()
@@ -47,13 +52,25 @@ public class RateLimitGatewayImpl implements RateLimitGateway {
 
     @Override
     public void saveRequest(Identifier id, RateLimitSubject subject, RateLimitConfigurable configurable) {
-        final var entry = RateLimitStoreEntry.newEntry(
-                id.getValue(),
-                subject,
-                configurable
-        );
-        final var key = STR."RateLimitStoreEntry: \{subject.getSubject()}";
-        this.redisTemplate.opsForZSet().add(key, entry, Instant.now().toEpochMilli());
-        this.redisTemplate.expire(key, configurable.getTimeLimit(), TimeUnit.of(configurable.getTimePeriod()));
+        final var key = RateLimitKey.generate(configurable, subject);
+        final var lock = this.lockRegistry.obtain(key);
+        final var success = lock.tryLock();
+        if (!success) {
+            throw new RuntimeException("Could not obtain lock");
+        }
+
+        try {
+            final var entry = RateLimitStoreEntry.newEntry(
+                    id.getValue(),
+                    subject,
+                    configurable
+            );
+
+            this.redisTemplate.opsForZSet().add(key, entry, Instant.now().toEpochMilli());
+            this.redisTemplate.expire(key, configurable.getTimeLimit(), TimeUnit.of(configurable.getTimePeriod()));
+        } finally {
+            lock.unlock();
+        }
+
     }
 }

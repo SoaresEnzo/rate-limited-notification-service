@@ -6,8 +6,10 @@ import dev.soaresenzo.modak.notificationService.rateLimiter.exceptions.RateLimit
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSendException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 
@@ -34,14 +36,26 @@ public class ErrorsHandler {
     }
 
     @ExceptionHandler({EmailValidationException.class, NotificationException.class})
-    public ResponseEntity<ErrorResponse> handleEmailValidationException(EmailValidationException exception) {
+    public ResponseEntity<ErrorResponse> handleEmailValidationException(Exception exception) {
         logger.error(exception.getMessage());
         return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage(), Instant.now()));
     }
 
+    @ExceptionHandler({NoResourceFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NoResourceFoundException exception) {
+        logger.error(exception.getMessage());
+        return ResponseEntity.status(404).body(new ErrorResponse(exception.getMessage(), Instant.now()));
+    }
+
+    @ExceptionHandler({MailSendException.class})
+    public ResponseEntity<ErrorResponse> mailSendException(MailSendException exception) {
+        logger.error(exception.getMessage());
+        return ResponseEntity.status(500).body(new ErrorResponse("Unable to connect to the e-mail server.", Instant.now()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
-        logger.error(exception.getMessage());
+        logger.error(STR."\{exception.getMessage()} - cause: \{exception.getCause()} - stacktrace: \{exception.getStackTrace()}");
         return ResponseEntity.status(500).body(new ErrorResponse(exception.getMessage(), Instant.now()));
     }
 }

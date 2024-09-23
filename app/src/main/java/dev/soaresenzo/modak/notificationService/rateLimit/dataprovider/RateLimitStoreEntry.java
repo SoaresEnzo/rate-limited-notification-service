@@ -3,8 +3,7 @@ package dev.soaresenzo.modak.notificationService.rateLimit.dataprovider;
 import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitConfigurable;
 import dev.soaresenzo.modak.notificationService.rateLimiter.RateLimitSubject;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.redis.core.TimeToLive;
+
 
 import java.util.Objects;
 
@@ -14,8 +13,7 @@ public class RateLimitStoreEntry {
     private String id;
     private String key;
     private String subject;
-    @TimeToLive
-    private long ttl = 60 * 60 * 24 * 30;
+
 
     private RateLimitStoreEntry(String id, String key, String subject) {
         this.id = id;
@@ -26,13 +24,12 @@ public class RateLimitStoreEntry {
     public RateLimitStoreEntry() {
     }
 
-    @PersistenceCreator
-    public static RateLimitStoreEntry of(String id, String key, String subject) {
-        return new RateLimitStoreEntry(id, key, subject);
-    }
-
     public static RateLimitStoreEntry newEntry(String id, RateLimitSubject subject, RateLimitConfigurable configurable) {
         return new RateLimitStoreEntry(id, configurable.getKey(), subject.getSubject());
+    }
+
+    public static RateLimitStoreEntry newEntry(String id, String subject, String key) {
+        return new RateLimitStoreEntry(id, key, subject);
     }
 
     public String getId() {
@@ -59,21 +56,12 @@ public class RateLimitStoreEntry {
         this.subject = subject;
     }
 
-    public long getTtl() {
-        return ttl;
-    }
-
-    public void setTtl(long ttl) {
-        this.ttl = ttl;
-    }
-
     @Override
     public String toString() {
         return "RateLimitStoreEntry{" +
                 "id='" + id + '\'' +
                 ", key='" + key + '\'' +
                 ", subject='" + subject + '\'' +
-                ", ttl=" + ttl +
                 '}';
     }
 

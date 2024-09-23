@@ -4,6 +4,7 @@ public record SendNotificationRequest(
         String channel,
         String type,
         String recipient,
-        String body
+        String body,
+        String subject
 ) {
 }
