@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Configuration
 public class NotificationConfig {
-    @Value("${properties}")
+    @Value("${notification.properties}")
     private String properties;  // This will hold the JSON string
     private Map<String, NotificationProperties.RateLimitConfig> propertiesMap = new HashMap<>();
 
